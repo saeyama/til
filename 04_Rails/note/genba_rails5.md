@@ -113,7 +113,8 @@ validates 標準 複数形
 validate カスタム 単数形
 ```
 
-### コールバック　後で呼んでほしい処理をあらかじめ指定しておく仕組みを指すプログラミング用語。モデルオブジェクトの重要なイベントの前後に、任意の処理をいくつでも呼び出せる仕組みになっている。    
+### コールバック  
+後で呼んでほしい処理をあらかじめ指定しておく仕組みを指すプログラミング用語。モデルオブジェクトの重要なイベントの前後に、任意の処理をいくつでも呼び出せる仕組みになっている。    
 
  ### ActiveRecordモデルのコールバック　検証・登録・更新・削除   
  - before
@@ -133,11 +134,11 @@ https://www.geekly.co.jp/column/cat-webgame/1910_001/
 nilじゃなくてnull データベースに登録するから。    
 
 ### has_secure_password
-﹂gem 'bcrypt', '~> 3.1.7' 入れる必要あり
+﹂gem 'bcrypt', '~> 3.1.7' 入れる必要あり  
 ﹂modelに設置
 
-追記するとデータベースのカラムに対応しない以下の属性が追加
-﹂password
+追記するとデータベースのカラムに対応しない以下の属性が追加  
+﹂password  
 ﹂password_confimation
 
 管理系コントローラ他にもある（Admin::BaseController）
@@ -169,7 +170,7 @@ https://qiita.com/akilax/items/f36b13f377f7e442bc73
 
 session_controller
 
-&. →　&&
+&. →　&&  
 https://qiita.com/yoshi_4/items/e987b698c1978d248cfc
 
 ### authenticate Userクラスにhas_secure_passwordと記述した時に自動で追加された認証のためのメソッド。
@@ -197,7 +198,6 @@ add_reference
 https://railsdoc.com/page/add_reference
 
 
-
 現在ログインしているユーザーの管理権限を確認。
 current_user.admin?
 
@@ -206,7 +206,8 @@ current_user.admin?
 create create!の違い
 https://qiita.com/keisukesaito/items/20adc17112d6d0bcf9d5
 
-User.where(admin: true).`to_sql` 生成予定のSQLを見ることができる。
+User.where(admin: true).`to_sql`   
+﹂生成予定のSQLを見ることができる。
 
 ### scope クエリー用のカスタムメソッド 
 
@@ -246,3 +247,141 @@ https://qiita.com/jnchito/items/c7e6e7abf83598a6516d
 
 Headless Chrome  
 https://developers.google.cn/web/updates/2017/04/headless-chrome?hl=ja
+
+- テストケースを整理・分類する　describe, context
+- テストコードを実行する　before, it  
+
+### describe  何について仕様を記述しようとしているのか（テスト対象）を記述
+
+### context　テストの内容を「状況・状態」のバリエーションごとに分類するために利用。
+
+### before　前提条件 describe context内にbeforeを記述すると、describe contextの領域内のテストコードを実行する前にbeforeのブロック内に書かれたコードを実行。itが実行されるたびに新たに実行。次のitが実行されるまでにデータベースの状態は元に戻されるため、あるテストケースのせいで別のテストケースが影響を受けるということは基本的には起きないようになっている。
+
+### it　テストケース 期待する動作を文章とブロック内のコードに記述。
+
+```
+describe
+  describe
+    before
+
+    context
+      before
+      it
+      it
+
+    context
+
+describe
+```
+
+test環境のデータベースをテスト専用で用いることになっている。  
+`Factory(ファクトリ)`　データを作成することを簡単にする仕組み  
+
+テストデータ  
+FactoryBotでデータを作成するための「テンプレート」を用意しておく。
+beforeなどで FactoryBotのテンプレートを利用してテスト用データベースにテストデータを投入。
+
+次のテストケースに進む前にデータ状態を戻す処理はSystem specが適切に処理。
+
+ファクトリをモデル毎に作成。
+
+```
+FactoryBot.define do
+  factory :user do
+    name {'テストユーザー'}
+    email {'text1@example.com'}
+    password{'password'}
+  end
+end
+```
+`:user` 左記からUserクラスを自動で類推。  
+ファクトリ名とクラスが異なる場合には`:class`オプションでクラスを指定することができる 
+
+FactoryBot:属性の名前を記述。パスワード password{ ‘password’ }
+
+```
+  factory :admin_user, class: User do
+  ...
+```
+
+```
+FactoryBot.define do
+  factory :task do
+    name {'テストを書く'}
+    description {'準備'}
+    user
+  end
+end
+```
+`user` 左記から自動類推。  
+関連名とファクトリ名が異なる場合は下記で記述可能  
+```
+  association :user, factory: :admin_user
+```  
+
+```
+user_a = FactoryBot.create(:user, name: 'ユーザーA', email: 'a@example.com')
+FactoryBot.create(:task, name: '最初のタスク', user: user_a)
+```
+
+タスクをローカル変数に代入しないのは後で使う用途がないから。
+userオプションの指定がなければTaskオブジェクトを作る際に、新しいUserオブジェクトを合わせて作成・登録する。
+
+:taskというファクトリを利用してTaskオブジェクトを生成する際に、同時に:userというファクトリを利用して作られたUserオブジェクトがuser関連に入った状態を作成してくれる。  
+
+spec/  
+|_factories(仮のデータをセット)  
+|_sytem(テスト)
+
+
+createの代わりにbuildを使用すればデータベースに登録する前で止めて未保存のオブジェクトを得ることができる。  
+
+Capybaraはブラウザ上で操作を行うためのメソッド群を用意してくれている。  
+https://qiita.com/morrr/items/0e24251c049180218db4  
+https://qiita.com/sogu/items/4370e8e54751899d5cad  
+
+```
+it 'ユーザーAが作成したタスクが表示される' do
+        expect(page).to have_content '最初のタスク'
+      end
+```
+・have_contentの部分は「マッチャ（Matcher）」  
+
+`let`  
+オブジェクト定義: `let(定義名){定義の内容}`  
+
+定義した位置に応じて確実に実行してほしい場合は`let!`を使用。
+
+letのブロックが実行されるタイミングはletが初めて呼ばれた時。  
+﹂定義が初めて呼び出されたときに評価されることを`遅延評価`とよぶ。
+
+`login_user` というletを describe/contextの中で定義した場合は、外側でも内側でも`login_user`を変数のように呼び出して使うことができる。
+
+itを共通化する場合は`shared_examples`という仕組みを利用。
+
+ex／5 examples → it 5件実行
+
+### 失敗したSpecの場所  
+####  #./spec/system/tasks_spec.rb:69:in `block (4 levels) in <top (required)>'   
+
+### どのような理由で失敗したか
+```
+Failure/Error:
+       within '#error_explanation' do
+         expect(page).to have_content '名称を入力してください'
+       end
+     
+     Capybara::ElementNotFound:
+       Unable to find css "#error_explanation"
+```
+（↑error_explanationというidを持つ要素が画面内に見つからなかった)
+
+
+### `rails c -s(rails console --sandbox)` ロールバックされる。
+
+```
+irb(main):004:0> exit
+   (0.1ms)  rollback transaction
+```   
+
+https://qiita.com/takuyanin/items/d39e2a049409258f90f5
