@@ -95,7 +95,7 @@ emailでユーザー検索
 eamilでユーザーデータが見つからない場合はuserはnilになるので、`&.`を使用。  
 
 session[:user_id]   
-﹂誰もログインしていない:nil
+﹂誰もログインしていない:nil  
 ﹂誰かログインしてる:ログイン中のユーザーのIdが格納
 
 ### helper_method
