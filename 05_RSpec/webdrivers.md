@@ -1,6 +1,6 @@
 今後見直す為に、備忘として残す。
 
-`bundle exec rspec spec/system/tasks_spec.rb`
+`bundle exec rspec spec/system/tasks_spec.rb`  
 ↓
 ```
 WARN Selenium [DEPRECATION] Selenium::WebDriver::Chrome#driver_path= is deprecated. Use Selenium::WebDriver::Chrome::Service#driver_path= instead.
@@ -140,18 +140,45 @@ https://qiita.com/jnchito/items/f9c3be449fd164176efa
 記事と異なるがエラーぽくない。`rubyzip`が関係？  
 コンフリクトのエラーにはなっていない。
 
-RSpecの知識があまりない中では断定的なことは言えないしタイポの可能性もあるので一旦ここまでとする。  
-知識をつけて今後比較検討予定。細かくブランチ切って管理しておく。
+### 【結論】 
 
+### `rubyzip`コンフリクト
+
+最初から`gem 'webdrivers', '~> 4.0'`を入れておけばエラーは回避された。
+
+```
+- gem 'chromedriver-helper'
++ gem 'webdrivers', '~> 4.0'
+```
+
+### 日本語が出ない。  
+
+`bundle exec rspec --format documentation`
+
+https://shinkufencer.hateblo.jp/entry/2019/01/21/233000  
+https://relishapp.com/rspec/rspec-core/v/2-4/docs/command-line/format-option  
+
+### 再インストールの確認のログが記事と異なる  
+﹂気にしなくて良さそう
+
+https://qiita.com/jnchito/items/f9c3be449fd164176efa  
+
+`Webdrivers.logger.level = ::Logger::Severity::DEBUG`  
+↓  
+`DEBUG Webdrivers A working webdriver version is already on the system`  
+
+
+---
+
+### 【備忘】
 
 バージョン指定  
 https://qiita.com/homhom_star/items/0a401a1075060fe2de4b  
-
 
 Rails6  
 https://qiita.com/Atelier-Mirai/items/89b8b38e897d64847c9a
 
 
-別アプリを作成した時に警告でたのを確認。
+別アプリで作成した時に警告でたのを確認。
 
-![ERD](https://gyazo.com/a2eca9b4e8ab861b794738c6511a6739.png)
+![ERD](https://gyazo.com/a2eca9b4e8ab861b794738c6511a6739.png)  
