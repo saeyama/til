@@ -10,7 +10,7 @@ sh: nodejs: command not found
 Node.js not installed. Please download and install Node.js https://nodejs.org/en/download/
 ```
 ↓
-５系で試しに作成。  
+5系で試しに作成。  
 local3000は立ち上がるが、scaffoldのindexページでエラー。  
 さすがにscaffoldで入力間違いは考えづらい。エラーログにもnodeぽいこと書いてあった。  
 
@@ -83,4 +83,16 @@ https://qiita.com/baby-0105/items/18f6fbc073e160bf83ac
 
 成功！
 
-奇跡的にできた感覚値なので、改めて色々調べておきたいところ。
+奇跡的にできた感覚値なので、改めて色々調べておきたいところ。  
+
+--- 
+
+【備忘】
+
+Node.js 16  
+https://forest.watch.impress.co.jp/docs/news/1320061.html
+
+iterm2  
+https://qiita.com/SuguruOoki/items/3f4fb307861fcedda7a5
+
+とりあえずiterm2は使わない。
