@@ -192,7 +192,7 @@ https://teratail.com/questions/121938
 
 #### find nilを渡した時はエラーが発生する 例外を発生させないようにするにはfind_byを利用する。
 
-### User Tasl 紐付け
+### User Task 紐付け
 
 add_reference  
 https://railsdoc.com/page/add_reference
@@ -217,7 +217,7 @@ https://www.sejuku.net/blog/21300
 `->`  は　ラムダ　（理解度…2％）  
 ラムダはdefをインスタンスにしたもの
 
-## Chapter5
+# Chapter5
 
 - テストは、環境のバージョンアップやリファクタリングの必須条件
 
@@ -251,13 +251,13 @@ https://developers.google.cn/web/updates/2017/04/headless-chrome?hl=ja
 - テストケースを整理・分類する　describe, context
 - テストコードを実行する　before, it  
 
-### describe  何について仕様を記述しようとしているのか（テスト対象）を記述
+**describe**  何について仕様を記述しようとしているのか（テスト対象）を記述。
 
-### context　テストの内容を「状況・状態」のバリエーションごとに分類するために利用。
+**context**　テストの内容を「状況・状態」のバリエーションごとに分類するために利用。
 
-### before　前提条件 describe context内にbeforeを記述すると、describe contextの領域内のテストコードを実行する前にbeforeのブロック内に書かれたコードを実行。itが実行されるたびに新たに実行。次のitが実行されるまでにデータベースの状態は元に戻されるため、あるテストケースのせいで別のテストケースが影響を受けるということは基本的には起きないようになっている。
+**before**　前提条件 describe context内にbeforeを記述すると、describe contextの領域内のテストコードを実行する前にbeforeのブロック内に書かれたコードを実行。itが実行されるたびに新たに実行。次のitが実行されるまでにデータベースの状態は元に戻されるため、あるテストケースのせいで別のテストケースが影響を受けるということは基本的には起きないようになっている。
 
-### it　テストケース 期待する動作を文章とブロック内のコードに記述。
+**it**　テストケース 期待する動作を文章とブロック内のコードに記述。
 
 ```
 describe
@@ -361,10 +361,10 @@ itを共通化する場合は`shared_examples`という仕組みを利用。
 
 ex／5 examples → it 5件実行
 
-### 失敗したSpecの場所  
-####  #./spec/system/tasks_spec.rb:69:in `block (4 levels) in <top (required)>'   
+#### 失敗したSpecの場所  
+` ./spec/system/tasks_spec.rb:69:in block (4 levels) in <top (required)> `   
 
-### どのような理由で失敗したか
+**どのような理由で失敗したか**
 ```
 Failure/Error:
        within '#error_explanation' do
@@ -377,7 +377,7 @@ Failure/Error:
 （↑error_explanationというidを持つ要素が画面内に見つからなかった)
 
 
-### `rails c -s(rails console --sandbox)` ロールバックされる。
+**`rails c -s(rails console --sandbox)` ロールバックされる。**
 
 ```
 irb(main):004:0> exit
@@ -385,3 +385,381 @@ irb(main):004:0> exit
 ```   
 
 https://qiita.com/takuyanin/items/d39e2a049409258f90f5
+
+# Chapter6  
+
+### routes  
+https://railsguides.jp/routing.html  
+
+railsガイドにも記載のあった`DSL`を至るところで見かける。サイトは以前ざっと見たがいまいち理解が出来なかったため、自分なりに改めて深掘り  
+DSL
+(Domain Specific Language）ドメイン固有言語
+
+https://ysk-pro.hatenablog.com/entry/dsl  
+https://techracho.bpsinc.jp/hachi8833/2018_06_06/56268  
+https://logmi.jp/tech/articles/306406 
+
+ある特定の問題の解決のみに提供されている言語
+(いろんな言語でDSLは利用されている)
+
+DSLは，メタプログラミングで使用  
+https://gihyo.jp/admin/feature/01/dsl/0001
+
+・メタプログラミングとは，ロジックを直接コーディングするのではなく，あるパターンをもったロジックを生成する高位ロジックを定義する方法のこと。主に対象言語に埋め込まれたマクロ言語によって行われる。  
+・プログラムを生成するプログラムを書く
+
+`ドメイン`：全体の中に定義される部分領域。  
+
+↑いろんな部分領域でマクロ（自動化）として利用されているものと一旦理解。  
+
+### ルーティング設定にもDSLが使用されている。
+
+改めてREST RESTfulについて複数サイトを読み込み。
+
+### REST  
+https://qiita.com/190131start/items/49e2e9a42f49f17e45c6  
+https://qiita.com/geshi/items/5275cc9d089105625c5f
+
+- WEBのインフラを利用
+- 情報の取得、作成、更新、削除といった操作は、すべてHTTPメソッドを利用すること。  
+HTTPメソッド:取得「GET」、作成「POST」、更新「PUT」、削除「DELETE」となる。  
+`sesson`などの状態管理は行わない。
+
+### RESTful RESTの性質を持つルート設計  
+
+https://www.slideshare.net/tkawa1/learning-rest-from-rails-style  
+https://necojackarc.hatenablog.com/entry/2015/05/16/174024
+
+本の注意書き  
+コントローラ・アクション構造に忠実に対応したインターフェイスにするならばルーティングは非常にシンプルになる。Rails２.0よりも前のルーティングはそうなっていた。  
+  
+local3000、会社のサイト・RESTful設定をしていないhtmlのURLを確認し違いを理解。  
+
+`URL URI` 違い(大分古いけどわかりやすい)  
+https://webtan.impress.co.jp/e/2010/03/09/7539  
+
+
+### ルート  
+URLパターンにURLパターンの一意の名前をつけることでURLヘルパーメソッドが用意される。  
+URLパターン名はルートごとというよりも、URLパターンごとにつけるものと理解しておく。
+処理は`Rack`のレイヤーで行われる。  
+https://railsguides.jp/rails_on_rack.html  
+https://qiita.com/k0kubun/items/248395f68164b52aec4a
+
+### RESTful  
+REST(設計原則)に従うシステムのことを指す形容詞  
+
+`resources resource`の違い  
+https://qiita.com/wacker8818/items/1ba526fcbc73e065a511  
+
+`resources`: ７つのアクションをリクエストするルーティングが設定
+`resource` : indexとidつきのパスを外した残りのアクションをリクエストするルーティングが設定  
+
+オプション  
+`:only`: 指定したルートだけ作成  
+`:except`: 指定したルート以外を作成  
+
+`member collection new`  
+https://railsguides.jp/routing.html  
+
+`memberとcollection`の違い
+https://qiita.com/k152744/items/141345e34fc0095217fe
+
+`scope namespace module`の違い    
+https://qiita.com/ryosuketter/items/9240d8c2561b5989f049  
+
+### I18n
+
+`ymlファイル`  
+https://qiita.com/Yama-to/items/587544993fb62610528a  
+https://magazine.rubyist.net/articles/0009/0009-YAML.html
+
+`Active Record`  
+https://railsguides.jp/active_record_basics.html
+
+`Active Model`   persisted?  
+https://railsguides.jp/active_model_basics.html  
+
+`i18n/modelを1つのファイルで管理`
+https://qiita.com/shimadama/items/7e5c3d75c9a9f51abdd5  
+
+### 日時  
+
+ActiveSupport::TimeZone クラスのオブジェクト：`UTC (協定世界時)`,`created_at`　　
+
+リクエスト毎に異なるタイムゾーンの時刻を入出力したい場合はフィルタなどでTime.zoneの値を切り替えるのが良い
+
+`スレッドセーフ`  
+https://wa3.i-3-i.info/word12456.html  
+
+`Time.current` `Date.current`は`Time.zone`が設定されている場合のみ利用。  
+そうでない場合はTimeクラス・Dateクラスを利用する。  
+
+### エラー処理  
+どの例外がどのステータスコードになるかはRailsが決めている。  
+
+### ログ
+ログの特定のパラメータ値をマスク  
+デフォルトではpasswordが設定  
+`Rails.application.config.filter_parameters += [:password]`
+`"password"=>"[FILTERED]"}`  
+
+RailsのControllerでlogを出力する  
+https://qiita.com/Kashiwara/items/f8a4030da6b17e96fabf
+
+### Strong Parameters
+
+`マスアサインメント機能`　モデルの機能で複数の属性を一括で代入することが出来る。  
+```
+task = Task.new(name: 'a', description: 'b')  
+```
+
+```
+ない場合
+
+task = Task.new  
+task.name = 'a'
+task.description = 'b'
+
+```  
+
+`マスアサインメント機能`のおかげで、コントローラーで受け取ったパラメータの一部を以下のように直接モデルに渡して複数の属性値を一括で割り当てることが出来る。  
+`task = Task.new(params[:task])`  
+
+上記では例外が走るので、`Strong Parameters`を設定する。  
+
+```  
+  def task_params
+    params.require(:task).permit(:name, :description)
+  end
+```
+※permitは入れ子構造にすることもできる。  
+https://qiita.com/kymmt90/items/4ce8618ca8f537b2ef7e  
+
+よくあるミス事例  
+form画面に更新したい属性のフィールドを追加したが、permit属性を増やすことを忘れることがある。  
+注意事項として画面上にはエラーも出ず、正しく動作しているように見えるがDBに一部の属性の値だけが反映されないという状況になりバグが発見しづらいので注意が必要。  
+※自動テストをした方がいい。 
+
+### CSRF(シーサーフ)  
+
+CSRFを防ぐには同じアプリから生じたリクエストであることを証明するための`セキュリティトークン`を発行し照合する。
+https://railsguides.jp/security.html  
+
+Railsはこの発行と照合の仕組みを標準で用意している。  
+トークンの発行はformから送られる情報にセキュリティトークンを含める方法で行わる。  
+正しいトークンかどうかの照合はコントローラで行われる。  
+
+標準で組み込まれているので設定等、記述は不要。  
+﹂Rails5.1まではコントローラーApplicationControllerに`protect_from_forgery with: :exception`の記述が必要だったがRails5.2からはデフォルト設定になったので記述不要。
+
+CSRF(シーサーフ)を防ぐ仕組みはGETリクエストには適用されない。  
+POST(DELETE PATCH PUT)でリクエストを行う。  
+
+`rails_ujs`  
+https://www.inodev.jp/entry/2019/12/03/234210  
+
+`fetch API`  
+https://developer.mozilla.org/ja/docs/Web/API/Fetch_API  
+
+### インジェクション    
+Webアプリケーションに悪意あるスクリプトやパラメータを入力し、それが評価されるときの権限で実行させる攻撃。  
+
+### XSS  
+ユーザーに表示するコンテンツに悪意あるスクリプト(主にJavaScript)を仕掛けてコンテンツを表示したユーザーにスクリプトを実行させることで任意の操作を行う攻撃。  
+オリジンによりユーザーの安全性が保たれる。  
+
+Railsのビューではユーザーが入力した文字列をエスケープしてくれる。(無害なHTML形式/特殊文字に変換)
+HTMLをエスケープされると困る場合は`raw`ヘルパー`String#html_safe`を使うとエスケープをスキップできる。  
+Slimは`==`で値を展開するとHTMLはエスケープされない。  
+
+許可するタグを指定したい場合は`sanitalize`ヘルパーを使用。  
+
+### SQLインジェクション　
+Railsではクエリメソッドに対してハッシュで条件を指定すると自動的に安全化のための処理を行ってくれる。　
+クエリメソッドにSQLを直接書きたい場合はプレースホルダを利用する。  
+
+### Rubyコードインジェクション  
+`Object#send` あるオブジェクトのメソッドを任意に呼び出せる  
+ユーザーからの入力をそのまま`send`に渡すのはNG  
+
+`Kernel.#eval`にユーザーからの入力を渡すのはかなり危険。  
+https://techacademy.jp/magazine/18717  
+
+### CSP  
+XSSやパケット盗聴といった特定の攻撃をブラウザ側で軽減する仕組み。  
+RailsではHTTPヘッダーにCSPを組み込む為の機能が用意されていて、`content_security_policy.rb`に記述をする。  
+通常はコメントアウトされている。 
+
+CSPを既存のアプリに適用する場合は`content_security_policy.rb`の以下を許容する。  
+スクリプトがポリシーに違反していても実行はブロックされない。指定したURLに違反内容が報告される。
+`Rails.application.config.content_security_policy_report_only = true`  
+
+既存のアプリでテストが通らなくなった。  
+https://qiita.com/nisshy82/items/34cc97ba15f10d37c861  
+
+設定方法(5.2)  
+https://qiita.com/ryohashimoto/items/75f48fa5a3846c58f735   
+
+### アセットパイプライン  
+
+https://railsguides.jp/asset_pipeline.html  
+https://www.transnet.ne.jp/2016/02/28/rails%E5%88%9D%E5%AD%A6%E8%80%85%E3%81%8C%E3%81%A4%E3%81%BE%E3%81%9A%E3%81%8Dcolnr%E3%80%8C%E3%82%A2%E3%82%BB%E3%83%83%E3%83%88%E3%83%91%E3%82%A4%E3%83%97%E3%83%A9%E3%82%A4%E3%83%B3/  
+
+https://qiita.com/ttaka66/items/991a52081a92cb6c2738
+
+JavaScript,CSS,画像などのリソース(アセット)を効率的に扱うための仕組み  
+アセットパイプラインは`sprockets-rails`で提供される`Sprockets`の機能でデフォルトで有効になっている。  
+開発者が書いたJavaScript,CSSを最終的にアプリで使う上で都合の良い状態にするためのパイプライン処理を行う。  
+`ブラウザが読み取れる形式で実行速度が早くブラウザキャッシュに対して最適化される`  
+
+CoffeeScript  
+https://programming-world.net/language/coffeescript/  
+
+https://re-engines.com/2019/08/26/rails-6%E3%81%AE%E5%A4%89%E6%9B%B4%E7%82%B9/  
+https://qiita.com/taiteam/items/a37c60fc15c1aa5bb606
+(分かりやすい)
+
+処理内容の最後  
+`ダイジェストの付与`  
+コードの内容からハッシュ値を算出しファイル名の末尾に付与。  
+コードが変更されればファイル名が変更される。ブラウザのキャッシュの影響で修正が反映されない問題を防ぐ。  
+
+
+環境による挙動の違い  
+development/アセットの連結が行われないのでファイル数分のlink,scriptタグが発生  
+![development](https://gyazo.com/2fd7771393e7e92ad9a3866c127bdc73.png)  
+
+production/Javascript・cssのファイルが１つずつ読み込み  
+(デプロイしたら確認)  
+
+`application.css`と`application.js`のマニフェストファイルはアセットパイプラインによって連結された結果のファイル。 
+
+`application.css`の読み込み  
+sassの場合 @import "bootstrap";
+cssの場合 //=　
+`※@importと//=は併用不可`
+
+`application.js`の読み込み  
+`//=` アセットパイプラインに指示を伝えるための特別な行として扱う。 
+Sprockets独自のディレクトリ 
+
+//= require_tree . 指定されたディレクトリ配下の全ファイルの内容を結合し、記述した位置に取り込み。  
+`.`を指定すると`application.js`が配置されているディレクトリ配下が対象になる。  
+
+※マニフェストで指定するファイル名はアセットの検索パスの設定を元に引き当てられる。  
+デフォルト `app/assets lib/assets vendor/assets` パスの出現順で行われるため、`app/assets`が最も優先される。  
+
+`app/assets lib/assets vendor/assets`  
+https://blog.tanebox.com/archives/22/  
+https://romantist.jp/blog/rails%E3%81%AEassets%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%99%E3%82%8B%E5%A0%B4%E6%89%80%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6/  
+
+`vendor/assets`  
+https://qiita.com/shimadama/items/cb50ff7fdd9e21431b7c  
+
+アセットのパス検索対象確認。
+
+```
+rails c
+
+irb(main):001:0> puts Rails.application.config.assets.paths
+```  
+View毎に適用するCSSを切り分ける  
+https://qiita.com/Ryunosuke38/items/a8daf1278ef5ddd20785
+
+
+### アセット関連の設定  
+
+`config/initializers/assets.rb`: 全ての環境で読み込まれる。環境共通の設定を記述する。  
+﹂`Rails.application.config.assets.version = '1.0'` 数値はダイジェストの生成に関わる。変更すると全てのアセットを強制的に期限切れにすることができる。  
+﹂`Rails.application.config.assets.precompile += %w( admin.js admin.css )`  
+(多分古いけど参考 https://qiita.com/prgseek/items/bf77c44189c55a7b41d8)
+
+`node_modules`はyarn   
+
+### 本番環境  
+`プリコンパイル` : あらかじめアセットパイプラインを実行して静的ファイルを生成する処理。  
+本番環境ではソースコードを更新してサーバを起動する際は、必ずプリコンパイルを実行する必要がある。  
+`bin/rails assets:precompile`  
+↓  
+```
+コンパイルされたjs,cssが作成される。
+ls public/assets/
+application-4fa33ed5d60452571bef883da345559df83411dd2f9f7c556455cb84fd836f1f.css
+application-4fa33ed5d60452571bef883da345559df83411dd2f9f7c556455cb84fd836f1f.css.gz
+application-da5f08fe9f516a1571725d0a928a1be5cac37ec5587d9394c90162df99520620.js
+application-da5f08fe9f516a1571725d0a928a1be5cac37ec5587d9394c90162df99520620.js.gz
+```  
+
+railsによる静的ファイル
+`public/assets/`に↑のプリコンパイルずみのファイルや404.htmlなどの`静的ファイル`配置されている。  
+﹂開発環境・テスト環境では基本的にrailsによる静的ファイルの配信の仕組みを利用。
+
+本番環境はNginxやApacheに静的ファイルの配信を担わせrailsは動的なコンテンツの配信に専念させる。 
+(railsアプリのパフォーマンスを高めるため)  
+この場合は、railsの静的ファイルを配信する昨日は不要になる。  
+﹂railsには静的ファイルの配信機能をon/offにする設定があり、本番環境では基本off  
+
+↑を変更するには(production環境をローカルPCで扱う場合)  
+~/.bash_profileに以下を追記  
+`export RAILS_SERVE_STATIC_FILES=1`  
+
+production環境用のデータベース作成  
+`RAILS_ENV=production bin/rails db:create db:migrate`  
+
+productionモードだと`master.key`が必要  
+
+productionモードでサーバ起動
+`bin/rails s --enviroment=production` 
+Capistranoなどのツールをデプロイして自動化するのが本筋  
+
+`Credentials` 特定の方式で管理されるproduction環境用の秘密情報  
+﹂`config/credentials.yml.enc`に記述(常に暗号化された状態で保存)  
+
+`production`環境で起動された場合は`master.key`からキー情報を取り出して秘密情報を内部的に復号して利用。
+
+キーはリポジトリ外で管理↓
+```
+.gitignore 
+/config/master.key 
+```
+
+参考：環境ごとのアセットパイプラインの挙動   
+https://numb86-tech.hatenablog.com/entry/2018/11/10/002439  
+
+`Credentials`の中身確認。
+```
+bin/rails credentials:show
+# aws:
+#   access_key_id: 123
+#   secret_access_key: 345
+```
+
+`Credentials`の編集    
+```
+EDITOR="code --wait" bin/rails credentials:edit
+New credentials encrypted and saved.
+```
+https://qiita.com/zaki_zaki/items/dfc83a1fcd7dbc07af6b  
+
+master.keyを紛失した場合は古いcredentials.yml.encファイルを削除してcredentials:editで新しく作成する。  
+master.keyと暗号化したcredentialsは同じリポジトリに管理しない。  
+
+`secret_key_base` 暗号化cookieや署名付cookieの整合性確認などに利用される秘密鍵。  
+(productionモードで起動するために必要/development・testは指定不要)
+外部に漏れた場合は再生成(`rails secret`)を利用  
+
+`Encrypted` Credentialsの汎用化の機能
+staging環境だけで使いたい秘密情報をCredentialsと分けて分かりやすく管理することもできる。  
+CredentialsはEncryptedをベースに作られている。  
+`bin/rails encrypted:show config/credentials.yml.enc`でも確認可能。  
+
+
+# Chapter7  
+
+### 確認画面  
+
+form_with simple_format(改行)  
+https://qiita.com/saik/items/5754aea53ec79a413cd7  
+
+
