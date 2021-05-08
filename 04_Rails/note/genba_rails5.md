@@ -209,7 +209,9 @@ https://qiita.com/keisukesaito/items/20adc17112d6d0bcf9d5
 User.where(admin: true).`to_sql`   
 ﹂生成予定のSQLを見ることができる。
 
-### scope クエリー用のカスタムメソッド 
+### scope クエリー用のカスタムメソッド   
+
+https://qiita.com/ozin/items/24d1b220a002004a6351  
 
 https://www.sejuku.net/blog/26994
 https://www.sejuku.net/blog/21300
@@ -762,4 +764,337 @@ CredentialsはEncryptedをベースに作られている。
 form_with simple_format(改行)  
 https://qiita.com/saik/items/5754aea53ec79a413cd7  
 
+※hiddenで値を渡している。    
 
+![confirm](https://gyazo.com/316b59cd44402d4d32c6018bbc4e0f39.png)  
+
+### 検索フォーム  
+https://pikawaka.com/rails/ransack  
+
+検索ワードが含まれる　`_cont`   
+完全一致　`_eq`  
+ラジオボタン　`_lteq`  
+同じかそれより大きい `_gteq`(SQL `>=`)  
+
+https://pikawaka.com/rails/distinct  
+
+![ransack](https://gyazo.com/dae53b9d604db0392642e62c2c079df8.png)
+
+f.search_field(フォームの右に「x」ボタンが表示される)  
+![f.search_field](https://gyazo.com/6f9154d3e9c6ec48f80abc06dccf69e2.png)  
+
+「test」で検索  
+![ransack](https://gyazo.com/07138ce797aed5914f05f710e2d7eb35.png)  
+
+**ransackable_attributes指定無し**
+```
+[1] pry(#<TasksController>)> Task.ransackable_attributes
+=> ["id", "name", "description", "created_at", "updated_at", "user_id"]
+```
+
+**ransackable_attributes指定**    
+```
+[1] pry(#<TasksController>)> Task.ransackable_attributes
+=> ["name", "created_at"]
+```
+
+Strong Parametersを使うことで同じ効果を得ることも出来るが、ransackを利用する場合はparams[:q]には何が入ってもいいようにしておいて、モデル側でransackable_attributesなどで制御するやり方が一般的。(その方が管理しやすい)  
+Strong Parametersを完璧に設定したり維持し続けるには労力がかかる。  
+
+### 検索フォーム(ソート)  
+
+▲▼なし  
+`hide_indicator: true`  
+
+### メイラー  
+
+`gem install mailcatcher`  
+bundlerでインストールすると不具合が発生するらしい  
+https://kossy-web-engineer.hatenablog.com/entry/2018/11/22/132708  
+
+mailcatcher  
+https://github.com/sj26/mailcatcher/issues/430  
+
+
+### ActiveStorage  
+
+`bin/rails active_storage:install`
+ActiveStorageが利用する２つのテーブルが出来る
+- active_storage_blobs  
+﹂`ActiveStorage::Blob`というモデルと紐付けされている。`ActiveStorage::Blob`は添付されたあファイルに対応するモデル。  
+- active_storage_attachments    
+﹂`ActiveStorage::Attachments`というモデルと紐付けされている。`ActiveStorage::Attachments`は`ActiveStorage::Blob`とアプリ内のモデルを関連付ける中間テーブル。`ActiveStorage::Blob`とは直接的にidのみで紐付け。  
+
+https://qiita.com/itkrt2y/items/32ad1512fce1bf90c20b  
+
+### ページネーション  
+`kaminari`  
+https://github.com/kaminari/kaminari  
+
+ページ番号に対応するデータの範囲を検索する部分についてはkaminariのpageというスコープを使うだけで簡単に行うことが出来る。  
+デフォルトだと1ページあたりの表示するレコード件数は25件。  
+```
+@tasks = @q.result(distinct: true).page(params[:page])
+```  
+- 現在どのページを表示しているのかの情報  
+- 他のページに移動する為のリンク   
+﹂`paginate`
+
+- 全データが何件なのかといった情報  
+﹂`page_entries_info`  
+
+### Active Job  
+
+`sidekiq`/`resque`/`delayed_job`:非同期実行を実現するgem。  
+
+`sidekiq`  
+https://en.wikipedia.org/wiki/Sidekiq
+
+`redis`サーバーインストール
+```
+brew info redis 
+```
+`redis`サーバー立ち上げ
+```
+% redis-server
+42785:C 03 May 2021 02:11:59.423 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+42785:C 03 May 2021 02:11:59.423 # Redis version=6.2.2, bits=64, commit=00000000, modified=0, pid=42785, just started
+42785:C 03 May 2021 02:11:59.423 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+42785:M 03 May 2021 02:11:59.424 * Increased maximum number of open files to 10032 (it was originally set to 256).
+42785:M 03 May 2021 02:11:59.424 * monotonic clock: POSIX clock_gettime
+                _._                                                  
+           _.-``__ ''-._                                             
+      _.-``    `.  `_.  ''-._           Redis 6.2.2 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._                                  
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 42785
+  `-._    `-._  `-./  _.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |           https://redis.io       
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |                                  
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+      `-._    `-.__.-'    _.-'                                       
+          `-._        _.-'                                           
+              `-.__.-'                                               
+
+42785:M 03 May 2021 02:11:59.425 # Server initialized
+42785:M 03 May 2021 02:11:59.425 * Ready to accept connections
+42785:M 03 May 2021 02:22:47.130 * 100 changes in 300 seconds. Saving...
+42785:M 03 May 2021 02:22:47.130 * Background saving started by pid 43052
+43052:C 03 May 2021 02:22:47.132 * DB saved on disk
+42785:M 03 May 2021 02:22:47.233 * Background saving terminated with success
+```
+
+sidekiqインストール
+※5系はgem 'sidekiq'だと最新バージョンになってエラーになる。
+https://teratail.com/questions/235628
+
+```
+gem 'sidekiq', '~> 5.0'
+```
+
+sidekiq立ち上げ
+
+```
+saekoyamada@sy taskleaf % bundle exec sidekiq
+
+
+         m,
+         `$b
+    .ss,  $$:         .,d$
+    `$$P,d$P'    .,md$P"'
+     ,$$$$$bmmd$$$P^'
+   .d$$$$$$$$$$P'
+   $$^' `"^$$$'       ____  _     _      _    _
+   $:     ,$$:       / ___|(_) __| | ___| | _(_) __ _
+   `b     :$$        \___ \| |/ _` |/ _ \ |/ / |/ _` |
+          $$:         ___) | | (_| |  __/   <| | (_| |
+          $$         |____/|_|\__,_|\___|_|\_\_|\__, |
+        .d$$                                       |_|
+
+2021-05-02T17:48:30.225Z 45926 TID-ovb7zns4y INFO: Running in ruby 2.5.1p57 (2018-03-29 revision 63029) [x86_64-darwin20]
+2021-05-02T17:48:30.225Z 45926 TID-ovb7zns4y INFO: See LICENSE and the LGPL-3.0 for licensing details.
+2021-05-02T17:48:30.225Z 45926 TID-ovb7zns4y INFO: Upgrade to Sidekiq Pro for more features and support: http://sidekiq.org
+2021-05-02T17:48:30.225Z 45926 TID-ovb7zns4y INFO: Booting Sidekiq 5.2.9 with redis options {:id=>"Sidekiq-server-PID-45926", :url=>nil}
+2021-05-02T17:48:30.237Z 45926 TID-ovb7zns4y INFO: Starting processing, hit Ctrl-C to stop
+2021-05-02T17:48:44.248Z 45926 TID-ovb75m4ly SampleJob JID-9d2240b85b5702ea8862d19b INFO: start
+2021-05-02T17:48:44.293Z 45926 TID-ovb75m4ly SampleJob JID-9d2240b85b5702ea8862d19b INFO: サンプルジョブを実行しました
+2021-05-02T17:48:44.294Z 45926 TID-ovb75m4ly SampleJob JID-9d2240b85b5702ea8862d19b INFO: done: 0.045 sec
+2021-05-02T17:49:13.069Z 45926 TID-ovb7st09m ActiveStorage::AnalyzeJob JID-51be4abe1ea2f84c3e957aba INFO: start
+2021-05-02T17:49:13.296Z 45926 TID-ovb7st09m ActiveStorage::AnalyzeJob JID-51be4abe1ea2f84c3e957aba INFO: done: 0.227 sec
+2021-05-02T17:49:13.389Z 45926 TID-ovb75m4ly SampleJob JID-7775e4a8e2b1fc3135b35f94 INFO: start
+2021-05-02T17:49:13.390Z 45926 TID-ovb75m4ly SampleJob JID-7775e4a8e2b1fc3135b35f94 INFO: サンプルジョブを実行しました
+2021-05-02T17:49:13.390Z 45926 TID-ovb75m4ly SampleJob JID-7775e4a8e2b1fc3135b35f94 INFO: done: 0.001 sec
+```
+
+#### 実行日指定
+
+```
+tasks_controllor.rb
+
+#タスク作成を行った後でジョブを呼び出す
+SampleJob .perform_later
+
+#翌日午後に実行  
+SampleJob.set(wait_untill: Date.tomorrow.noon) .perform_later  
+
+#一週間後に実行  
+SampleJob .perform_later
+```
+
+# Chapter8  
+
+DOM : HTMLをJavaScript等のプログラムから利用する為の仕組み。  
+
+e.currenteTargetとe.targetの違い    
+https://www.javadrive.jp/javascript/event/index9.html  
+
+### turbolinks  
+https://techtechmedia.com/turbolinks-rails/#:~:text=Turbolinks%E3%81%A8%E3%81%AF%E3%80%81Rails4%E3%81%8B%E3%82%89,%E3%81%A7%E7%B5%84%E3%81%BF%E8%BE%BC%E3%81%BE%E3%82%8C%E3%81%A6%E3%81%84%E3%81%BE%E3%81%99%E3%80%82  
+
+### Ajax    
+
+`HTML`  
+```  
+<a data-confirm="タスク「test」を削除します。よろしいですか？" class="btn btn-danger" rel="nofollow" data-method="delete" href="/tasks/6">削除</a>  
+```
+↓    
+`remote: true`追記  
+
+`HTML`  
+```
+<a data-confirm="タスク「test」を削除します。よろしいですか？" class="btn btn-danger" data-remote="true" rel="nofollow" data-method="delete" href="/tasks/5">削除</a>
+```  
+`remote: true` →　HTML `data-remote="true"`
+
+`remote: true`はbutton_toメソッドにも利用可能。  
+`form_with`はデフォルトでAjaxを利用しているので、無効にする為、`local: true`オプションを指定している。  
+
+### rails-ujs  
+https://railsguides.jp/working_with_javascript_in_rails.html#rails-ujs-event-handlers  
+https://www.inodev.jp/entry/2019/12/03/234210    
+- ActionView添付のJavaScriptライブラリによって処理　　
+- Ajaxリクエストを送信するだけでなく、関連イベントも発行  
+﹂`ajax:success`もイベントの一つでAjaxによるレスポンスの成功=タスクの削除が成功(ステータスコード2××)の場合に処理。それ以外は`ajax:error`イベントが処理。taskleafアプリだと削除が成功するステータスコード204が返される。    
+- HTMLのformを使ってリクエストを飛ばしていることと原理は同じ  
+- 他、`method: :delete`、`data-confirm`(確認ダイアログの表示)、submitボタンの`data-disabled-with`(確認ダイアログの表示)のフォームの二重クリックを阻止する機能等ある。  
+
+
+※JavaScriptのレスポンスを実行してタスクを削除する場合    
+
+サーバ側はDOM要素としてどの削除ボタンがクリックされてAjax通信が発生したのかを知ることが出来ない。  
+削除されたタスクのidの値はわかるのでDOM要素側にタスクのid情報を与えておく。  
+
+```
+views/tasks/index
+
+tr id="task-#{task.id}"
+
+views/tasks/destroy.js.erb
+
+document.querySelector("#task-<%= @task.id %>").style.display = 'none';
+``` 
+![rails-ujs](https://gyazo.com/ea638243a26d70e9d58f67be1c5b4cbe.png)  
+
+rails-ujsでAjax通信を行う場合、レスポンスとしてJavaScriptが返されて来ていれば、自動的に実行をしてくれる。  
+(サーバ側で動的にJavaScriptを組み立てることが出来る)
+
+
+### SJR(Server-generated JavaScript Responses)  
+﹂サーバーサイドで生成したJavaScriptからなるレスポンス(画面更新までのプロセス)のこと  
+
+- メリット 手軽。サーバサイドの資産を簡単に使える。フラグメントキャッシュの利用による高速化・環境の差異によらず一定のHTMLを表示出来る。  
+(フラグメントキャッシュ https://qiita.com/suketa/items/eeae7e2196520323f694)
+- デメリット　共有化がしづらい。ES2015(2016) をWebpackで互換性のあるJSに変換することが不可。  
+
+`Elementのメソッド`
+https://syncer.jp/Web/API_Interface/Reference/IDL/Element/insertAdjacentElement/  
+
+### Turbolinks  
+﹂ページ遷移を高速化する  
+﹂`プレビュー機能` １度訪れたことのあるページを再度訪問した際、前回のキャッシュを一旦表示してからリクエストを送信し取得が完了したら新しいものに置き換える。見かけ上の画面遷移が一瞬で行われUXの向上に繋がる。※キャッシュされた古い画面が一時的に表示される点に注意。  
+﹂HTTPリクエストメソッドはGETのみだが、他の`redirect_to`によるリダイレクトの際には動作を最適化する。  
+﹂Railsとは独立したライブラリ。アプリを作成した時点でTurbolinksは有効になる。新規に導入作業を行う必要はない。アダプタがあればスマホでも利用可能。  
+﹂`script`は、head要素内に記述する。bodyに記載すると、ページ遷移で画面が更新される際の不要な読み込みや評価が発生する可能性が高い。headであれば左記を避けることが出来る。ページ遷移先のhead要素内に新しいscriptがあった場合は、そのタイミングで1回だけ評価をする。  
+﹂利用する際は、`application.js`、`application.css`を一つにまとめることが重要。高速化のポイントは共通アセットの読み込み頻度を減らすことにある。ページ毎に読み込むJSやCSSファイルが異なるようだと、ページ遷移のたびに再度読み込みが発生し高速化の効果を十分に得られない。 
+
+`History API`を用いることでブラウザの戻るボタンなどの履歴操作や、その際のキャッシュの復元にも対応している。    
+https://developer.mozilla.org/ja/docs/Web/API/History_API  
+
+```
+turbolinks:loadイベント：初回のページ表示時やTurbolinksによりページの状態が遷移した際に発火するイベント
+
+document.addEventListener('turbolinks:load', function(){
+  console.log('Loaded');
+});
+```
+↓
+![Turbolinks](https://gyazo.com/dfeebf41d206e72527db470a31d42696.png)  
+
+他、ページ遷移の各タイミングのイベント、キャッシュの保存・復元に関するイベント、Ajaxリクエストに関するイベントなど  
+
+※いずれも`document`オブジェクトに対して発火している。 
+
+※Turbolinksの無効化
+
+アプリ立ち上げ  
+```
+rails new app_name --skip-turbolinks
+```
+
+立ち上げ後に、無効化  
+https://qiita.com/matsubishi5/items/c4c8a5df03ae630ae534  
+
+### Yarn  
+Facebookにより開発されたJavaScriptのパッケージマネージャ  
+
+従来のJavaScriptライブラリの導入方法  
+- vendorディレクトリ配下にコピーを配置  
+﹂管理を自分で行う必要がある。ライブラリがバージョンアップしても気づきにくい。  
+- gem利用  
+﹂ライブラリがバージョンアップについてはgem側の対応を待つ必要があり最新版を利用できるとは限らない。  
+
+```
+bin/yarn add <パッケージ名>
+```  
+
+※開発環境のみで利用するパッケージをインストールする場合は --devを付与
+
+addコマンドは以下の処理を行っている。  
+- 指定されたパッケージをpackage.jsonに追加  
+- 指定されたパッケージをインストール  
+
+`package.json`    
+﹂追加されたパッケージのことを`依存パッケージ`と呼ぶ。  
+﹂`package.json`に記述された`依存パッケージ`を一括でインストール。`bin/yarn install`  
+﹂ライブラリは`npmレジストリ`からインストール。  
+﹂パッケージを削除。`bin/yarn remove <パッケージ名>`  
+
+インストールしたパッケージは`node_modules`ディレクトリに配置。  
+
+### Webpacker  
+﹂Railsで開発 Rails5.1で追加  
+﹂RailsでWebpackを使ってJavaScriptを管理することを簡単にしてくれるgem  
+(Weboacker登場以前もWeboackをRailsアプリに導入することは可能だったがかなり手間。Weboackerは面倒な仕事を担ってくれる。)
+
+導入方法  
+﹂アプリ立ち上げ時に`--webpack`  
+﹂既存アプリ`gem webpacker`で追加し必要なパッケージをインストール（`bin/rails webpacker:install`)  
+
+app/javascript/packs/`application.js`  
+﹂ `エントリポイント`(コンパイルを開始するファイル)になる。コンパイルの結果生成されるファイルに対応する存在でもある。 
+
+Webpackerは`app/javascript/packs/`にあるファイルをエントリポイントとしてコンパイルを実行するのでインポートしたいJavaScriptファイルなどは`app/javascript/`配下の他のディレクトリに置く。  
+
+本番環境のコンパイル  
+﹂`webpacker:compile`という`Rakeタスク`で実行  
+﹂Sproketsを導入している場合は`assets:precompile`で実行すれば良い。  
+
+各環境でどのようにコンパイルするかの設定は`config/webpacker.yml`で設定。  
+
+### React  
+Facebookが開発しているJavaScriptのUIライブラリ。  
+Reactは仮想DOMと呼ばれるデータ構造をメモリ上に持ち、ページ変化の差分のみをレンダリングすることで効率的にページを表示・更新することができる。  
