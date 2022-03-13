@@ -34,7 +34,7 @@ Node.js = サーバサイドのJavaScript
 - Node.jsが開発されたことで、JavaScriptでサーバーサイドの処理ができるようになった。
 - それに伴い、JavaScriptのフレームワークが開発された。（React、Express）  
 
-## nmp  
+## npm  
 Node Package Manager  
 Node.jsモジュールのパッケージ（Package ）を管理する（Manager）ツール。  
 Node.jsのパッケージ（Package）とは、予め用意された便利な機能をまとめたもの。  
